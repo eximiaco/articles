@@ -6,6 +6,8 @@ This repository is the place where all of EximiaCo's articles are born. Every co
 
 **This is NOT a community project.** For information about permission to reproduce selections of the content, write to us at [contact@eximia.co](mailto:contact@eximia.co).
 
+As a reference of good writing style, consult the [Mailchimp Styleguide](https://styleguide.mailchimp.com/). Also, there are a plenty of published articles in our web-sites.
+
 ## Contributing
 
 All new articles must be proposed as pull requests.
@@ -27,9 +29,10 @@ Published articles are moved from the proposals directory to a proper archive di
 
 ## Pull request
 
-When you are done, pull the changes from the `master` branch on the main CodeCracker repo and integrate them.
+When you are done, pull the changes from the `master` branch on the main articles repo and integrate them.
 
 You have to do that in the command line:
+
 ````bash
 # add the main repo with the `eximiaco-articles` name
 git remote add eximiaco-articles https://github.com/eximiaco/articles.git
@@ -43,3 +46,12 @@ git checkout <youbranchname>
 git merge master
 # solve integration conflicts
 ````
+
+If you know git well, you can rebase your changes instead of merging them. If not, it is ok to merge them.
+When your changes are up to date with the `master` branch then you should push them to your Github repo and then you will be able to issue
+a [pull request](https://help.github.com/articles/using-pull-requests/). Make your PR message clear. If when you are creating the pull request on
+Github it mentions that the PR cannot be merged because there are conflicts it means you forgot to integrate the `master` branch. Correct that push the changes to your personal repo. This will automatically update the PR. **The project maintainers should not have to resolve merge conflicts, you should.**
+
+After your pull request is accepted you may delete your local branch if you want. Update your `master` branch so you can continue to contribute in the future. And thank you! :)
+
+If your pull request is denied try to understand why. It is not uncommon that PRs are denied but after some discussing and fixing they are accepted. 
