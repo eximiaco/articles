@@ -183,7 +183,9 @@ Existe, porém, uma desvantagem ao utilizar essa abordagem de *dynamic queries*.
 ## EM RESUMO
 
 **O FATO**
+
 Utilizar *stored procedures* para acessar seus dados no *SQL Server* é a forma mais rápida e segura, além de proporcionar a reutilização do código e redução do tráfego na rede. Porém é preciso entender como o *SQL Server* trabalha com *procedures* parametrizadas, para que o código não venha a apresentar problemas futuros de performance quando seus dados não são distribuídos de forma semelhante, ocasionando eventuais gargalos no seu servidor de banco de dados.
 
 **O INSIGHT**
+
 Com algumas alterações na forma da escrita das *stored procedures*, é possível otimizarmos nosso código para evitar problemas que podem vir a acontecer, por debaixo dos panos, nos ambientes de produção cujo a solução nem sempre é trivial e perceptível. Além disso, podemos escrever códigos “genéricos”, mas com ganhos de performance apenas utilizando somente o que é realmente necessário para resolver as consultas.
