@@ -49,7 +49,7 @@ git merge master
 
 If you know git well, you can rebase your changes instead of merging them. If not, it is ok to merge them.
 When your changes are up to date with the `master` branch then you should push them to your Github repo and then you will be able to issue
-a [pull request](https://help.github.com/articles/using-pull-requests/). Make your PR message clear. If when you are creating the pull request on
+a [pull request](https://help.github.com/articles/using-pull-requests/). Make your PR message clear, and the description should be the title of the article. If when you are creating the pull request on
 Github it mentions that the PR cannot be merged because there are conflicts it means you forgot to integrate the `master` branch. Correct that push the changes to your personal repo. This will automatically update the PR. **The project maintainers should not have to resolve merge conflicts, you should.**
 
 After your pull request is accepted you may delete your local branch if you want. Update your `master` branch so you can continue to contribute in the future. And thank you! :)
