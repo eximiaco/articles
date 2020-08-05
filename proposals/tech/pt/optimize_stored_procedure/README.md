@@ -112,9 +112,9 @@ Ao chamar novamente a procedure um plano de execução mais performático foi es
 ![Plano ótimo selecionado](./storedprocedure3.png)
 
 
-## **Usando *Dynamic Queries* para otimizar suas *Stored Procedures***
+## **Usando *Dynamic SQL* para otimizar suas *Stored Procedures***
 
-*Dynamic Queries* (consultas dinâmicas) são consultas que são construídas sob demanda antes de serem executadas, sendo que o funcionamento da consulta pode variar de acordo com os parâmetros de entrada. Apesar da escrita ser mais trabalhosa (e um pouco menos legível), utilizar *dynamic queries* para implementar a *procedure* acima, pode resolver os problemas de otimização de código e *parameter sniffing* de uma forma permanente e mais eficaz.
+*Dynamic SQL* são consultas que são construídas sob demanda antes de serem executadas, sendo que o funcionamento da consulta pode variar de acordo com os parâmetros de entrada. Apesar da escrita ser mais trabalhosa (e um pouco menos legível), utilizar *dynamic SQL* para implementar a *procedure* acima, pode resolver os problemas de otimização de código e *parameter sniffing* de uma forma permanente e mais eficaz.
 
 ```
 CREATE   PROCEDURE [dbo].[usp_GetPersonOptimized]
@@ -161,7 +161,7 @@ GO
 >O uso do filtro *WHERE* 1 = 1, é apenas um facilitador para a escrita dos demais filtros da consulta. Dessa forma não se faz necessário ficar testando se a cláusula *WHERE* já foi adicionada anteriormente a consulta a cada concatenção dos demais filtros, deixando seu código mais limpo. Na hora de avaliar os predicados da consulta o compilador ignora esse filtro ao montar o plano de execução.
 
 
-Existem diversas vantagens em escrever *dynamic queries* nas *procedures* dessa forma: 
+Existem diversas vantagens em escrever *dynamic SQL* nas *procedures* dessa forma: 
 
 - Monta o plano de execução ótimo de acordo com os parâmetros passados.
 - O uso da ***sp_executesql*** faz com que o plano de execução seja colocado em cache e reutilizado pelo *SQL Server* posteriormente, sempre que uma consulta semelhante vier a ser executada.
@@ -173,7 +173,7 @@ Ao efetuar a chamada da *procedure* simultaneamente, porém passando parâmetros
 
 ![Planos ótimos selecionados em ambos casos](./storedprocedure3.png)
 
-Existe, porém, uma desvantagem ao utilizar essa abordagem de *dynamic queries*. Para cada plano de execução diferente que a *procedure* criar de acordo com os parâmetros passados, eventualmente poderão ser criados muitos planos de execução que serão armazenados no cache de planos para essa mesma *stored procedure*. Entretanto o ganho de performance com essa solução irá mais que compensar por isso.
+Existe, porém, uma desvantagem ao utilizar essa abordagem de *dynamic SQL*. Para cada plano de execução diferente que a *procedure* criar de acordo com os parâmetros passados, eventualmente poderão ser criados muitos planos de execução que serão armazenados no cache de planos para essa mesma *stored procedure*. Entretanto o ganho de performance com essa solução irá mais que compensar por isso.
 
 
 ## EM RESUMO
