@@ -6,7 +6,7 @@ Utilizar *stored procedures* para consultar o banco de dados tem uma série de b
 
 Toda vez que uma consulta é submetida ao *SQL Server*, ela precisa ser interpretada (*query parser* e *algebrizer*), otimizada (*optimizer*) e, finalmente, executada. Se forem *stored procedures*, porém, a interpretação e otimização já ocorrem na primeira execução, nas demais, a execução passa a ser de maneira direta. Entretanto, é necessário estar atento para identificar se o banco “entende” a consulta da forma adequada.
 
-No exemplo a seguir, foi criado a seguinte *stored procedure* para a base *[AdventureWorks2019](https://docs.microsoft.com/pt-br/sql/samples/adventureworks-install-configure?view=sql-server-ver15&tabs=ssms)*.
+Considere a seguinte *stored procedure* para a base *[AdventureWorks2019](https://docs.microsoft.com/pt-br/sql/samples/adventureworks-install-configure?view=sql-server-ver15&tabs=ssms)*.
 
 ```
 CREATE OR ALTER PROCEDURE dbo.usp_GetPerson 
@@ -40,14 +40,14 @@ END
 ```
 
 
-> ## [information] Evite o prefixo 'sp_' para nomes de stored procedures
+> ## Evite o prefixo 'sp_' para nomes de stored procedures
 >Ao criar *stored procedures*, evite utilizar o padrão *sp_\<nome da procedure\>* ao nomeá-las. Esse padrão de nomenclatura é utilizado pelo *SQL Server* para as *procedures* de sistema, e faz com que ele procure se a *procedure* existe antes no banco *Master* e somente depois no banco atual.
 >
 >Utilizar outra nomenclatura evita a primeira busca desnecessária, um pequeno ganho de performance.
 
-De maneira simples, queremos retornar um conjunto de registros filtrando com base em um conjunto diverso de parâmetros opcionais.
+Essa *procedure* irá retornar um ou mais registros filtrando com base num conjunto diverso de parâmetros opcionais.
 
-É muito comum encontramos esse padrão de escrita de *procedures* para resolver consultas que podem ter vários parâmetros opcionais como possíveis filtros. Infelizmente, apesar desse código ser rápido e prático de escrever, existem alguns problemas nessa abordagem que ficam evidentes na análise do plano de execução para uma consulta simples:
+É muito comum encontrar esse padrão de escrita de *procedures* para resolver consultas que podem ter vários parâmetros opcionais como possíveis filtros. Infelizmente, apesar desse código ser de escrita rápida e prática, existem alguns problemas nessa abordagem que ficam evidentes na análise do plano de execução para uma consulta simples:
 
 ![Plano de Execução](./storedprocedure1.png)
 
@@ -59,24 +59,20 @@ De maneira simples, queremos retornar um conjunto de registros filtrando com bas
 
 ![Reutilização do Plano de Execução](./storedprocedure2.png)
 
-Na imagem acima, se constata que o mesmo plano de execução foi reutilizado, mesmo com parâmetros que levam a uma consulta diferente. Trata-se de um problema bem conhecido: ***Parameter Sniffing***. [tweet][Para quem não sabe o que faz, um benefício de uma ferramenta converte-se, rapidamente, em um pesadelo.](https://twitter.com/intent/tweet?text=Para%20quem%20n%C3%A3o%20sabe%20o%20que%20faz,%20um%20benef%C3%ADcio%20de%20uma%20ferramenta%20converte-se,%20rapidamente,%20em%20um%20pesadelo.%20&url=https://www.eximiaco.tech/?p=3884&via=eximiaco)[/tweet]
+Na imagem acima, constata-se que o mesmo plano de execução foi reutilizado, mesmo com parâmetros que levam a uma consulta diferente. Trata-se de um problema bem conhecido: ***Parameter Sniffing***. [Para quem não sabe o que faz, um benefício de uma ferramenta converte-se, rapidamente, em um pesadelo.](https://twitter.com/intent/tweet?text=Para%20quem%20n%C3%A3o%20sabe%20o%20que%20faz,%20um%20benef%C3%ADcio%20de%20uma%20ferramenta%20converte-se,%20rapidamente,%20em%20um%20pesadelo.%20&url=https://www.eximiaco.tech/?p=3884&via=eximiaco)
 
-> ## [information] *Parameter Sniffing*
+> ## *Parameter Sniffing*
 >Quando a procedure é compilada, o valor do parâmetro é avaliado na criação do plano de execução que será armazenado no cache de planos. Uma vez que o processo de compilar consultas é oneroso, o *SQL Server*, sempre que possível, tenta reutilizar os planos de execução já criados. O problema ocorre quando o resultado das consultas difere muito e foi reutilizado o plano de execução da consulta mais simples (que foi executada primeiro), para resolver a consulta mais complexa (executada posteriormente), e assim acaba optando por um plano não ótimo. Esse é um comportamento normal do banco de dados quando você está utilizando parâmetros nas suas stored procedures.
 
-Existem algumas soluções paleativas para resolver o problema em questão quando o mesmo estiver ocorrendo em produção e não se tem muito tempo para apagar o incêndio no servidor. A mais simples delas é identificar o plano de execução que está no cache e utilizar o comando **DBCC FREEPROCCACHE \<PLANO DE EXECUÇÃO\>** para remover ele, forçando com isso que na próxima execução da procedure monte um plano de execução melhor. É preciso ter cuidado pois caso seja executado essa instrução sem informar parâmetros, irá remover TODOS os planos de execução do seu cache de planos, fazendo o *SQL Server* ter mais trabalho para recompilar os mesmos, quando as consultas forem executadas novamente. Isso consome bastante recursos do servidor.
+Existem algumas soluções paleativas para resolver o problema em questão quando o mesmo estiver ocorrendo em produção e não se tem muito tempo para apagar o incêndio no servidor. A mais simples delas é identificar o plano de execução que está no cache e utilizar o comando **DBCC FREEPROCCACHE \<PLANO DE EXECUÇÃO\>** para removê-lo, forçando com isso que na próxima execução da procedure monte um plano de execução melhor. É preciso ter cuidado pois caso seja executado essa instrução sem informar parâmetros, irá remover TODOS os planos de execução do seu cache de planos, fazendo o *SQL Server* ter mais trabalho para recompilar os mesmos, quando as consultas forem executadas novamente. Isso consome bastante recursos do servidor.
 
 ```
 DBCC FREEPROCCACHE (0x060006000C99302500499EFC8801000001000000000000000000000000000000000000000000000000000000);
 ```
 
-[veja]
+>Uma ferramenta que pode ajudar a encontrar qual plano de execução precisa ser removido é executar a [*sp_BlitzCache*](https://www.brentozar.com/blitzcache/), desenvolvida por Brent Ozar e disponível para download gratuito em seu site. Nos resultados da *procedure* tem uma coluna exatamente com o comando para remoção do plano de execução do cache
 
-Uma forma simples de encontrar qual plano de execução precisa ser removido é executar a [*sp_BlitzCache*](https://www.brentozar.com/blitzcache/), desenvolvida por Brent Ozar e disponível para download gratuito em seu site. Nos resultados da *procedure* tem uma coluna exatamente com o comando para remoção do plano de execução do cache
-
-[/veja]
-
-Outra possível solução para o problema em questão, é ao final da instrução *select* da sua *procedure* utilizar a opção *OPTION (RECOMPILE)*. Embora essa solução resolva o problema de forma mais persistente e efetiva do que a remoção do plano do cache, irá fazer com que o *SQL Server* descarte qualquer plano de execução salvo para a consulta e crie um novo plano de execução a cada vez que a *procedure* for chamada, podendo ocasionar um consumo alto de recursos no seu servidor, caso a mesma seja executada com frequência, ou essa técnica também seja utilizada em várias outras procedures.
+Outra possível solução para o problema em questão, é ao final da instrução *select* da sua *procedure* utilizar a opção *OPTION (RECOMPILE)*. Embora essa solução resolva o problema de forma mais persistente e efetiva do que a remoção do plano do cache, irá fazer com que o *SQL Server* descarte qualquer plano de execução salvo para a consulta e crie um novo plano de execução sempre que a *procedure* for chamada, podendo ocasionar um consumo alto de recursos no seu servidor, caso a mesma seja executada com frequência, ou essa técnica também seja utilizada em várias outras procedures.
 
 ```
 CREATE OR ALTER PROCEDURE dbo.usp_GetPerson
@@ -118,7 +114,7 @@ Ao chamar novamente a procedure um plano de execução mais performático foi es
 
 ## **Usando *Dynamic Queries* para otimizar suas *Stored Procedures***
 
-Apesar da escrita ser mais trabalhosa (e um pouco menos legível), utilizar *dynamic queries* (consultas dinâmicas) para implementar a *procedure* acima, pode resolver os problemas de otimização de código e *parameter sniffing* de uma forma permanente e mais eficaz.
+*Dynamic Queries* (consultas dinâmicas) são consultas que são construídas sob demanda antes de serem executadas, sendo que o funcionamento da consulta pode variar de acordo com os parâmetros de entrada. Apesar da escrita ser mais trabalhosa (e um pouco menos legível), utilizar *dynamic queries* para implementar a *procedure* acima, pode resolver os problemas de otimização de código e *parameter sniffing* de uma forma permanente e mais eficaz.
 
 ```
 CREATE   PROCEDURE [dbo].[usp_GetPersonOptimized]
@@ -162,7 +158,7 @@ END
 GO
 ```
 
->O uso do filtro *WHERE* 1 = 1, é apenas um facilitador para a escrita dos demais filtros da consulta. Dessa forma não se faz necessário ficar testando se algum filtro já foi adicionado anteriormente a consulta. Na hora de avaliar os predicados da consulta o compilador ignora esse filtro ao montar o plano de execução.
+>O uso do filtro *WHERE* 1 = 1, é apenas um facilitador para a escrita dos demais filtros da consulta. Dessa forma não se faz necessário ficar testando se a cláusula *WHERE* já foi adicionada anteriormente a consulta a cada concatenção dos demais filtros, deixando seu código mais limpo. Na hora de avaliar os predicados da consulta o compilador ignora esse filtro ao montar o plano de execução.
 
 
 Existem diversas vantagens em escrever *dynamic queries* nas *procedures* dessa forma: 
@@ -175,9 +171,9 @@ Existem diversas vantagens em escrever *dynamic queries* nas *procedures* dessa 
 
 Ao efetuar a chamada da *procedure* simultaneamente, porém passando parâmetros diferentes, nota-se que os planos de execução mudaram para cada caso, tendo o *SQL Server* optado pelo plano ideal para ambos casos:
 
-![Planos ótimos selecionados em abos casos](./storedprocedure3.png)
+![Planos ótimos selecionados em ambos casos](./storedprocedure3.png)
 
-Existe, porém, uma desvantagem ao utilizar essa abordagem de *dynamic queries*. Eventualmente poderão ser criados muitos planos de execução para essa mesma *stored procedure* que serão armazenados no cache de planos. Entretanto o ganho de performance com essa solução irá mais que compensar por isso.
+Existe, porém, uma desvantagem ao utilizar essa abordagem de *dynamic queries*. Para cada plano de execução diferente que a *procedure* criar de acordo com os parâmetros passados, eventualmente poderão ser criados muitos planos de execução que serão armazenados no cache de planos para essa mesma *stored procedure*. Entretanto o ganho de performance com essa solução irá mais que compensar por isso.
 
 
 ## EM RESUMO
