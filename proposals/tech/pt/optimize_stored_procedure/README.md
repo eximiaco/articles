@@ -1,6 +1,6 @@
 # OTIMIZANDO STORED PROCEDURES
 
-**Há algum tempo, por ingenuidade, alguns programadores assumem que usar *stored procedures* é uma coisa ruim. Muitos assumem que há risco de “vazar” o domínio do código aplicação para o banco de dados. Entretanto, quando isso ocorre, a causa é o abuso da tecnologia e não da tecnologia em si.**
+**Há algum tempo, por ingenuidade, alguns programadores assumem que usar *stored procedures* é uma coisa ruim. Muitos assumem que há risco de “vazar” o domínio do código aplicação para o banco de dados. Entretanto, quando isso ocorre, a causa é o abuso da tecnologia e não da tecnologia em si. Nesse post serão demonstrados alguns problemas que podem ocorrer quando utilizam-se *stored procedures* parametrizadas, assim como possíveis técnicas para contorná-los e otimizar suas consultas.**
 
 Utilizar *stored procedures* para consultar o banco de dados tem uma série de benefícios comparado com consultas *ad hoc*: são mais rápidas, reduzem o tráfego na rede, são mais seguras e podem encapsular código reutilizável. Além de tudo isso, são armazenadas já pré-compiladas pelo *SQL Server*.
 
