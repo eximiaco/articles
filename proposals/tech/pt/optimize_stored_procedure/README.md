@@ -171,7 +171,7 @@ Existem diversas vantagens em escrever *dynamic SQL* nas *procedures* dessa form
 
 Ao efetuar a chamada da *procedure* simultaneamente, porém passando parâmetros diferentes, nota-se que os planos de execução mudaram para cada caso, tendo o *SQL Server* optado pelo plano ideal para ambos casos:
 
-![Planos ótimos selecionados em ambos casos](./storedprocedure3.png)
+![Planos ótimos selecionados em ambos casos](./storedprocedure4.png)
 
 Existe, porém, uma desvantagem ao utilizar essa abordagem de *dynamic SQL*. Para cada plano de execução diferente que a *procedure* criar de acordo com os parâmetros passados, eventualmente poderão ser criados muitos planos de execução que serão armazenados no cache de planos para essa mesma *stored procedure*. Entretanto o ganho de performance com essa solução irá mais que compensar por isso.
 
