@@ -1,4 +1,4 @@
-#Qual a forma certa de liderar seu time?
+# Qual a forma certa de liderar seu time?
 
 Segundo o professor Falconi, **liderar é bater meta, com o time, fazendo o certo**. Nesta perspectiva, a liderança dá ênfase a capacidade de alcançar resultado. Embora explicite que esses resultados devem ser obtidos de maneira coletiva e respeitando os limites éticos e morais, não presume nenhum estilo específico sobre como exercer essa liderança. 
 Existem várias formas de liderar, cada uma com seus pontos positivos e negativos e que podem ser mais ou menos efetivos de acordo com o time, empresa ou situação. Compreender estes estilos e ter flexibilidade para adaptar sua forma de liderança pode ser a chave para aumentar e manter o desempenho da sua equipe em diferentes cenários.
@@ -11,7 +11,7 @@ Embora possa ser considerado obsoleto, em boa parte das situações, o modelo de
 Os estilos de liderança também podem variar de um modelo mais centralizador, que concentra decisões e responsabilidades para um mais liberal que constantemente delega poderes ao seu time. A centralização do poder pode ser útil quando o nível de maturidade do time não permite compartilhar tantas responsabilidades ou em situações que exijam medidas rápidas e pouco populares. Porém, essa mesma abordagem pode ser desastrosa quando o time cresce e a centralização do poder se torna um gargalo para tomada de decisões. Também pode desmotivar um time que gosta de autonomia e responsabilidade, característica comum em profissionais do conhecimento. Neste segundo caso, um líder mais liberal geralmente tem mais potencial de aumentar o desempenho do seu time propondo a ele novos desafios e mantendo as pessoas motivadas.
 
 
-##Afinal, qual o melhor estilo de liderança?
+## Afinal, qual o melhor estilo de liderança?
 Independente do estilo de liderança, compartilhamos da visão de Jim Whitehurst, presidente da IBM e ex CEO da Red Hat, que líderes devem trabalhar de maneira intencional e deliberada para incendiar as faíscas de paixão e emoção dentro do seu time. Líderes devem inspirar suas equipes! Isto significa que **em vez de dispendermos tempo sendo batedores de ponto preocupados com o horário que as pessoas trabalham ou quão rápido uma tarefa é feita, garantindo apenas a execução de um trabalho medíocre, devemos desenvolver habilidades para engajar as pessoas em torno de um propósito grande**. Na nossa visão só existe um jeito de fazer com que outras pessoas façam algo, fazendo elas quererem fazer.
 
 > As a leader, you should be working very intentionally to spark as much emotion and passion as you can among your team rather than worrying about running the kinds of conventional management studies that try to measure how hard or fast people are working. While that form of management style may have worked well when works trackeled rote tasks like screwdrivers and working on assembly lines, it's completely irrelevant to modern workers. (The Open Organization, Jim Whitehurst)
