@@ -1,10 +1,11 @@
-# OTIMIZANDO STORED PROCEDURES PARAMETRIZADAS
+# OTIMIZANDO PERFORMANCE DAS APLICAÇÕES COM DYNAMIC SQL
 
-Há algum tempo, por ingenuidade, alguns **programadores assumem que usar *stored procedures* é uma coisa ruim**. Presumem que há o risco de “vazar” o domínio do código da aplicação para o banco de dados. Entretanto, quando isso ocorre, a causa é o abuso da tecnologia e não da tecnologia em si. Nesse post serão demonstrados alguns problemas que podem ocorrer quando utiliza-se *stored procedures* parametrizadas, assim como possíveis técnicas para contorná-los e otimizar suas consultas.
-
-Utilizar *stored procedures* para consultar o banco de dados tem uma série de benefícios comparado com consultas *ad hoc*: são mais rápidas, reduzem o tráfego na rede, são mais seguras e podem encapsular código reutilizável. Além de tudo isso, são armazenadas já pré-compiladas pelo *SQL Server*.
+Há algum tempo, por ingenuidade, alguns **programadores assumem que usar *stored procedures* é uma coisa ruim**. Presumem que há o risco de “vazar” o domínio do código da aplicação para o banco de dados ou que o banco pode ser tornar um gargalo. Entretanto, quando essas coisas ocorrem, a causa é o abuso da tecnologia e não da tecnologia em si. 
+É importante analisar o modelo de escala da aplicação e a arquitetura ideal para tomar a decisão correta, porém utilizar *stored procedures* para consultar o banco de dados pode trazer uma série de benefícios comparado com consultas *ad hoc*: são mais rápidas, reduzem o tráfego na rede, são mais seguras e podem encapsular código reutilizável. Além de tudo isso, são armazenadas já pré-compiladas pelo *SQL Server*.
 
 Toda vez que uma consulta é submetida ao *SQL Server*, ela precisa ser interpretada (*query parser* e *algebrizer*), otimizada (*optimizer*) e, finalmente, executada. Se forem *stored procedures*, porém, a interpretação e a otimização já ocorrem na primeira execução, nas demais, o processo é direto. Entretanto, é necessário estar atento para identificar se o banco “entende” a consulta da forma adequada.
+
+Nesse post demonstraremos alguns problemas que podem ocorrer quando utiliza-se *stored procedures* parametrizadas, assim como possíveis técnicas para contorná-los e otimizar suas consultas.
 
 Considere a seguinte *stored procedure* para a base *[AdventureWorks2019](https://docs.microsoft.com/pt-br/sql/samples/adventureworks-install-configure?view=sql-server-ver15&tabs=ssms)*.
 
