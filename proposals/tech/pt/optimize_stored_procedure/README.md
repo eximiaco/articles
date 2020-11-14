@@ -1,10 +1,10 @@
-# OTIMIZANDO STORED PROCEDURES
+# OTIMIZANDO STORED PROCEDURES PARAMETRIZADAS
 
-**Há algum tempo, por ingenuidade, alguns programadores assumem que usar *stored procedures* é uma coisa ruim. Muitos assumem que há risco de “vazar” o domínio do código aplicação para o banco de dados. Entretanto, quando isso ocorre, a causa é o abuso da tecnologia e não da tecnologia em si. Nesse post serão demonstrados alguns problemas que podem ocorrer quando utilizam-se *stored procedures* parametrizadas, assim como possíveis técnicas para contorná-los e otimizar suas consultas.**
+Há algum tempo, por ingenuidade, alguns **programadores assumem que usar *stored procedures* é uma coisa ruim**. Presumem que há o risco de “vazar” o domínio do código da aplicação para o banco de dados. Entretanto, quando isso ocorre, a causa é o abuso da tecnologia e não da tecnologia em si. Nesse post serão demonstrados alguns problemas que podem ocorrer quando utiliza-se *stored procedures* parametrizadas, assim como possíveis técnicas para contorná-los e otimizar suas consultas.
 
 Utilizar *stored procedures* para consultar o banco de dados tem uma série de benefícios comparado com consultas *ad hoc*: são mais rápidas, reduzem o tráfego na rede, são mais seguras e podem encapsular código reutilizável. Além de tudo isso, são armazenadas já pré-compiladas pelo *SQL Server*.
 
-Toda vez que uma consulta é submetida ao *SQL Server*, ela precisa ser interpretada (*query parser* e *algebrizer*), otimizada (*optimizer*) e, finalmente, executada. Se forem *stored procedures*, porém, a interpretação e otimização já ocorrem na primeira execução, nas demais, a execução passa a ser de maneira direta. Entretanto, é necessário estar atento para identificar se o banco “entende” a consulta da forma adequada.
+Toda vez que uma consulta é submetida ao *SQL Server*, ela precisa ser interpretada (*query parser* e *algebrizer*), otimizada (*optimizer*) e, finalmente, executada. Se forem *stored procedures*, porém, a interpretação e a otimização já ocorrem na primeira execução, nas demais, o processo é direto. Entretanto, é necessário estar atento para identificar se o banco “entende” a consulta da forma adequada.
 
 Considere a seguinte *stored procedure* para a base *[AdventureWorks2019](https://docs.microsoft.com/pt-br/sql/samples/adventureworks-install-configure?view=sql-server-ver15&tabs=ssms)*.
 
@@ -47,12 +47,12 @@ END
 
 Essa *procedure* irá retornar um ou mais registros filtrando com base num conjunto diverso de parâmetros opcionais.
 
-É muito comum encontrar esse padrão de escrita de *procedures* para resolver consultas que podem ter vários parâmetros opcionais como possíveis filtros. Infelizmente, apesar desse código ser de escrita rápida e prática, existem alguns problemas nessa abordagem que ficam evidentes na análise do plano de execução para uma consulta simples:
+É muito comum encontrar esse padrão de escrita de *procedures* para resolver consultas que podem ter vários parâmetros opcionais nos filtros. Infelizmente, apesar desse código ser de escrita rápida e prática, existem alguns problemas nessa abordagem que ficam evidentes na análise do plano de execução para uma consulta simples:
 
 ![Plano de Execução](./storedprocedure1.png)
 
  
- **Na imagem, o primeiro ponto de atenção é a complexidade do plano de execução determinado pelo *SQL Server***. A consulta proposta é simples (buscar a pessoa cujo *BusinessEntityID* = 2). Repare que, mesmo não utilizando as tabelas de endereço é efetuada a junção com elas. Outro aspecto importante é que o *Optimizer* dispensou o melhor índice efetuando um *index scan* no índice *AK_person_rowguid* ao invés de um *index seek* no índice *PK_Person_BusinessEntityID*.
+A consulta é simples, tem o propósito de buscar a pessoa cujo *BusinessEntityID* seja igual a 2. Porém, **o primeiro ponto de atenção que embora a consulta seja simples seu plano de execução, determinado pelo *SQL Server**, é complexo*, conforme pode ser percebido na imagem acima pela quantidade de operadores do plano. Vale destacar também que, mesmo não utilizando as tabelas de endereço é efetuada a junção com elas. Outro aspecto importante é que o *Optimizer* dispensou o melhor índice percorrendo todos regitros da tabela fazend um *index scan* através do *AK_person_rowguid* em vez de busca direcionada fazendo um *index seek* através do índice *PK_Person_BusinessEntityID*.
 
 
 **Mas o que acontece se alterarmos os parâmetros passados para a procedure?**
@@ -64,7 +64,7 @@ Na imagem acima, constata-se que o mesmo plano de execução foi reutilizado, me
 > ## *Parameter Sniffing*
 >Quando a procedure é compilada, o valor do parâmetro é avaliado na criação do plano de execução que será armazenado no cache de planos. Uma vez que o processo de compilar consultas é oneroso, o *SQL Server*, sempre que possível, tenta reutilizar os planos de execução já criados. O problema ocorre quando o resultado das consultas difere muito e foi reutilizado o plano de execução da consulta mais simples (que foi executada primeiro), para resolver a consulta mais complexa (executada posteriormente), e assim acaba optando por um plano não ótimo. Esse é um comportamento normal do banco de dados quando você está utilizando parâmetros nas suas stored procedures.
 
-Existem algumas soluções paleativas para resolver o problema em questão quando o mesmo estiver ocorrendo em produção e não se tem muito tempo para apagar o incêndio no servidor. A mais simples delas é identificar o plano de execução que está no cache e utilizar o comando **DBCC FREEPROCCACHE \<PLANO DE EXECUÇÃO\>** para removê-lo, forçando com isso que na próxima execução da procedure monte um plano de execução melhor. É preciso ter cuidado pois caso seja executado essa instrução sem informar parâmetros, irá remover TODOS os planos de execução do seu cache de planos, fazendo o *SQL Server* ter mais trabalho para recompilar os mesmos, quando as consultas forem executadas novamente. Isso consome bastante recursos do servidor.
+Existem algumas soluções paleativas para resolver o problema em questão quando o mesmo estiver ocorrendo em produção e não se tem muito tempo para apagar o incêndio no servidor. A mais simples delas é identificar o plano de execução que está no cache e utilizar o comando **DBCC FREEPROCCACHE \<PLANO DE EXECUÇÃO\>** para removê-lo, forçando com isso que na próxima execução da procedure monte um plano de execução melhor. É preciso ter cuidado pois caso seja executado essa instrução sem informar parâmetros, irá remover TODOS os planos de execução do seu cache de planos, fazendo o *SQL Server* ter mais trabalho para recompilar os mesmos, quando as consultas forem executadas novamente. Isso consome bastante recursos do servidor!
 
 ```
 DBCC FREEPROCCACHE (0x060006000C99302500499EFC8801000001000000000000000000000000000000000000000000000000000000);
