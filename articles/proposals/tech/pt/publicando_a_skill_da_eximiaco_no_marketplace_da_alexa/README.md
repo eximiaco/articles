@@ -22,6 +22,6 @@ Durante a certificação, o time da Alexa irá avaliar a execução como se foss
 
 A *skill* da EximiaCo precisou ser revisada durante o processo de publicação, principalmente por que a resposta à invocação estava deficiente de contexto. Contudo, seguindo as diretrizes enviadas no e-mail de resposta da primeira certificação, foi extremamente fácil resolver.
 
-O processo de certificação é rápido, porém é importante considerá-lo no seu tempo de desenvolvimento, pois levará alguns dias após tudo pronto para tudo esteja disponível publicamente. No nosso caso, após a submissão da *skill*, a resposta veio dois dias depois, e, após publicada, levou algumas horas para ser disponibilizada.
+O processo de certificação é rápido, porém é importante considerá-lo no seu tempo de desenvolvimento, pois levará alguns dias após tudo pronto para tudo esteja disponível publicamente. No nosso caso, após a submissão da *skill*, a resposta veio em aproximadamente dois dias, e, quando publicada, levou algumas horas para ser disponibilizada.
 
 Para quem ainda não conhece a *skill* dos *Drops* da EximiaCo, ela já está disponível no *[marketplace da Alexa](https://www.amazon.com.br/Douglas-Picolotto-Drops-da-EximiaCo/dp/B087QV63BF)*. E para quem quiser contribuir, a skill está no *[Github](https://github.com/eximiaco/drops-alexa-skill)* e é totalmente *Open Source*.
